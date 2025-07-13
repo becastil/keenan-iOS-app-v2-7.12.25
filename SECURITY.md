@@ -2,91 +2,122 @@
 
 ## Supported Versions
 
-| Version | Supported |
-|---------|-----------|
-| 2.0.x   | ✅ Yes    |
-| < 2.0   | ❌ No     |
+| Version | Supported          |
+| ------- | ------------------ |
+| 2.0.x   | :white_check_mark: |
+| < 2.0   | :x:                |
 
-## Reporting Security Vulnerabilities
+## Reporting a Vulnerability
 
-We take security seriously. If you discover a security vulnerability, please follow these steps:
+We take the security of Sydney Health Clone seriously. If you believe you have found a security vulnerability, please report it to us as described below.
 
-### 🔒 Private Reporting (Preferred)
+**Please do not report security vulnerabilities through public GitHub issues.**
 
-1. **Do NOT** create a public issue
-2. Email security details to: anton.knoery@gmail.com
-3. Include "SuperClaude Security" in subject line
-4. Provide detailed description of the vulnerability
+### How to Report
 
-### 📝 Required Information
+Email us at: security@sydneyhealth-demo.com (Note: This is a demo project email)
 
-Please include:
-- Description of the vulnerability
-- Steps to reproduce the issue
-- Potential impact assessment
-- Any suggested fixes or mitigations
-- Your contact information for follow-up
+Please include the following information:
+- Type of issue (e.g., buffer overflow, SQL injection, cross-site scripting, etc.)
+- Full paths of source file(s) related to the manifestation of the issue
+- The location of the affected source code (tag/branch/commit or direct URL)
+- Any special configuration required to reproduce the issue
+- Step-by-step instructions to reproduce the issue
+- Proof-of-concept or exploit code (if possible)
+- Impact of the issue, including how an attacker might exploit it
 
-### ⏱️ Response Timeline
+### Response Timeline
 
-- **24 hours**: Initial acknowledgment
-- **72 hours**: Preliminary assessment
-- **7 days**: Detailed response with next steps
-- **30 days**: Resolution target (depending on complexity)
+- **Initial Response**: Within 48 hours
+- **Assessment**: Within 5 business days
+- **Resolution**: Depends on severity (see below)
 
-## Security Considerations
+### Severity Levels & Response Times
 
-### Configuration Framework Security
-- SuperClaude is a configuration framework, not executable software
-- No network connections or data transmission
-- Files are stored locally in ~/.claude/
-- Shell scripts have limited system access
-- Template reference system (@pattern) validated for integrity
+| Severity | Description | Resolution Time |
+|----------|-------------|-----------------|
+| Critical | Data breach, authentication bypass, RCE | 24-48 hours |
+| High | Privilege escalation, data exposure | 5 business days |
+| Medium | Limited data exposure, DoS | 10 business days |
+| Low | Minor issues with minimal impact | 30 days |
 
-### Installation Security
-- install.sh performs file operations only
-- No sudo/admin privileges required
-- Backup existing configurations before installation
-- All operations within user home directory
-
-### Usage Security
-- Configuration files are read-only for Claude Code
-- No sensitive data stored in configurations
-- Slash commands execute through Claude Code's security model
-- MCP integrations follow Claude Code's sandbox restrictions
-
-## Best Practices
-
-### For Users
-- Review install.sh before execution
-- Keep SuperClaude updated
-- Report suspicious behavior
-- Use official installation methods only
+## Security Best Practices
 
 ### For Contributors
-- Follow secure coding practices
-- No hardcoded secrets or credentials
-- Validate all user inputs
-- Test security implications of changes
 
-## Scope
+1. **Never commit secrets**: Use environment variables and .env files
+2. **Validate all inputs**: Sanitize and validate all user inputs
+3. **Use parameterized queries**: Prevent SQL injection
+4. **Implement proper authentication**: Use JWT tokens with appropriate expiration
+5. **Encrypt sensitive data**: Use AES-256 for data at rest
+6. **Follow OWASP guidelines**: Reference OWASP Top 10
 
-This security policy covers:
-- SuperClaude configuration files
-- Installation scripts
-- GitHub repository security
-- Community interaction security
+### For Users
 
-## Disclaimer
+1. **Keep dependencies updated**: Regularly update all packages
+2. **Use strong passwords**: Implement password policies
+3. **Enable 2FA**: When available
+4. **Monitor logs**: Check for suspicious activities
+5. **Regular backups**: Maintain secure backups
 
-SuperClaude is provided "as is" without warranty. While we strive for security, users are responsible for:
-- Reviewing code before installation
-- Using in appropriate environments
-- Following Claude Code security guidelines
-- Backing up existing configurations
+## Security Features
+
+### Currently Implemented
+
+- JWT-based authentication
+- HTTPS/TLS encryption in transit
+- Input validation and sanitization
+- SQL injection prevention
+- CORS configuration
+- Rate limiting (planned)
+- Audit logging
+
+### Planned Enhancements
+
+- Field-level encryption for PHI/PII
+- Biometric authentication (mobile)
+- Certificate pinning (mobile)
+- Web Application Firewall (WAF)
+- Intrusion detection system
+
+## HIPAA Compliance Note
+
+This is a demonstration project. For production healthcare applications:
+
+1. Implement full encryption at rest
+2. Add automatic session timeout
+3. Implement access controls per HIPAA requirements
+4. Maintain audit logs for 6 years
+5. Implement Business Associate Agreements (BAAs)
+6. Regular security risk assessments
+
+## Dependencies
+
+We regularly update dependencies to patch known vulnerabilities. Current security-critical dependencies:
+
+- JWT library: Moving from `dgrijalva/jwt-go` to `golang-jwt/jwt` v4+
+- Database driver: Using parameterized queries
+- TLS: Minimum version 1.2
+
+## Security Checklist for Deployment
+
+- [ ] All secrets in environment variables
+- [ ] Database credentials encrypted
+- [ ] HTTPS enabled with valid certificates
+- [ ] Rate limiting configured
+- [ ] Logging configured (without sensitive data)
+- [ ] Backup procedures in place
+- [ ] Incident response plan documented
+- [ ] Security headers configured
+- [ ] CORS properly configured
+- [ ] Input validation on all endpoints
+
+## Contact
+
+For security concerns: security@sydneyhealth-demo.com
+
+For general issues: Use GitHub Issues
 
 ---
 
-**Questions?** Contact anton.knoery@gmail.com
-
-*SuperClaude v2 | Security-conscious configuration framework*
+*Last updated: July 2025*

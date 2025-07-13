@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package health.messaging;
+option go_package = "github.com/sydney-health-clone/shared/proto/messaging";
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+service MessagingService {
+  rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse);
+  rpc GetConversation(GetConversationRequest) returns (GetConversationResponse);
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  rpc MarkAsRead(MarkAsReadRequest) returns (MarkAsReadResponse);
+  rpc StreamMessages(StreamMessagesRequest) returns (stream Message);
+}
+
+message Conversation {
+  string conversation_id = 1;
+  string member_id = 2;
+  string subject = 3;
+  ConversationType type = 4;
+  repeated Participant participants = 5;
+  Message last_message = 6;
+  int32 unread_count = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message Message {
+  string message_id = 1;
+  string conversation_id = 2;
+  string sender_id = 3;
+  string sender_name = 4;
+  string content = 5;
+  repeated Attachment attachments = 6;
+  bool is_read = 7;
+  google.protobuf.Timestamp sent_at = 8;
+  google.protobuf.Timestamp read_at = 9;
+}
+
+message Participant {
+  string participant_id = 1;
+  string name = 2;
+  ParticipantType type = 3;
+}
+
+message Attachment {
+  string attachment_id = 1;
+  string file_name = 2;
+  string content_type = 3;
+  int64 size_bytes = 4;
+  string url = 5;
+}
+
+enum ConversationType {
+  CONVERSATION_TYPE_UNSPECIFIED = 0;
+  CONVERSATION_TYPE_GENERAL = 1;
+  CONVERSATION_TYPE_CLAIMS = 2;
+  CONVERSATION_TYPE_BENEFITS = 3;
+  CONVERSATION_TYPE_PROVIDER = 4;
+}
+
+enum ParticipantType {
+  PARTICIPANT_TYPE_UNSPECIFIED = 0;
+  PARTICIPANT_TYPE_MEMBER = 1;
+  PARTICIPANT_TYPE_SUPPORT_AGENT = 2;
+  PARTICIPANT_TYPE_CARE_COORDINATOR = 3;
+  PARTICIPANT_TYPE_PROVIDER = 4;
+}
+
+message ListConversationsRequest {
+  string member_id = 1;
+  ConversationType type = 2;
+  bool unread_only = 3;
+  health.common.PageRequest page = 4;
+}
+
+message ListConversationsResponse {
+  repeated Conversation conversations = 1;
+  health.common.PageResponse page = 2;
+}
+
+message GetConversationRequest {
+  string conversation_id = 1;
+  health.common.PageRequest page = 2;
+}
+
+message GetConversationResponse {
+  Conversation conversation = 1;
+  repeated Message messages = 2;
+  health.common.PageResponse page = 3;
+}
+
+message SendMessageRequest {
+  string conversation_id = 1;
+  string member_id = 2;
+  string content = 3;
+  repeated Attachment attachments = 4;
+}
+
+message SendMessageResponse {
+  Message message = 1;
+}
+
+message MarkAsReadRequest {
+  string member_id = 1;
+  repeated string message_ids = 2;
+}
+
+message MarkAsReadResponse {
+  int32 updated_count = 1;
+}
+
+message StreamMessagesRequest {
+  string member_id = 1;
+  repeated string conversation_ids = 2;
+}

@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package health.claims;
+option go_package = "github.com/sydney-health-clone/shared/proto/claims";
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+service ClaimsService {
+  rpc ListClaims(ListClaimsRequest) returns (ListClaimsResponse);
+  rpc GetClaim(GetClaimRequest) returns (GetClaimResponse);
+  rpc GetCostEstimate(GetCostEstimateRequest) returns (GetCostEstimateResponse);
+  rpc SubmitClaim(SubmitClaimRequest) returns (SubmitClaimResponse);
+}
+
+message Claim {
+  string claim_id = 1;
+  string member_id = 2;
+  string provider_name = 3;
+  google.protobuf.Timestamp service_date = 4;
+  google.protobuf.Timestamp processed_date = 5;
+  health.common.ClaimStatus status = 6;
+  health.common.CoverageType coverage_type = 7;
+  repeated ClaimLine line_items = 8;
+  health.common.Money total_charged = 9;
+  health.common.Money allowed_amount = 10;
+  health.common.Money deductible_applied = 11;
+  health.common.Money copay = 12;
+  health.common.Money coinsurance = 13;
+  health.common.Money member_responsibility = 14;
+  health.common.Money plan_paid = 15;
+  string explanation_of_benefits_url = 16;
+}
+
+message ClaimLine {
+  string service_code = 1;
+  string service_description = 2;
+  int32 quantity = 3;
+  health.common.Money charged_amount = 4;
+  health.common.Money allowed_amount = 5;
+  health.common.Money paid_amount = 6;
+}
+
+message CostEstimate {
+  string procedure_code = 1;
+  string procedure_name = 2;
+  health.common.Money in_network_estimate = 3;
+  health.common.Money out_of_network_estimate = 4;
+  health.common.Money your_cost_estimate = 5;
+  repeated CostBreakdown cost_breakdown = 6;
+  string disclaimer = 7;
+}
+
+message CostBreakdown {
+  string description = 1;
+  health.common.Money amount = 2;
+}
+
+message ListClaimsRequest {
+  string member_id = 1;
+  health.common.ClaimStatus status = 2;
+  google.protobuf.Timestamp start_date = 3;
+  google.protobuf.Timestamp end_date = 4;
+  health.common.CoverageType coverage_type = 5;
+  health.common.PageRequest page = 6;
+}
+
+message ListClaimsResponse {
+  repeated Claim claims = 1;
+  health.common.PageResponse page = 2;
+}
+
+message GetClaimRequest {
+  string claim_id = 1;
+}
+
+message GetClaimResponse {
+  Claim claim = 1;
+}
+
+message GetCostEstimateRequest {
+  string member_id = 1;
+  string procedure_code = 2;
+  string provider_id = 3;
+  string zip_code = 4;
+}
+
+message GetCostEstimateResponse {
+  CostEstimate estimate = 1;
+}
+
+message SubmitClaimRequest {
+  string member_id = 1;
+  bytes receipt_image = 2;
+  string provider_name = 3;
+  google.protobuf.Timestamp service_date = 4;
+  health.common.Money amount = 5;
+  string description = 6;
+}
+
+message SubmitClaimResponse {
+  string claim_id = 1;
+  string status = 2;
+}

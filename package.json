@@ -1,0 +1,30 @@
+{
+  "name": "sydney-health-clone",
+  "version": "1.0.0",
+  "description": "Cross-platform healthcare application with Uber's technology stack",
+  "private": true,
+  "workspaces": [
+    "web",
+    "backend/services/*",
+    "shared/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:web\"",
+    "dev:backend": "cd backend && go run ./cmd/gateway",
+    "dev:web": "cd web && npm run dev",
+    "build": "npm run build:proto && npm run build:web",
+    "build:proto": "cd shared/proto && ./build.sh",
+    "build:web": "cd web && npm run build",
+    "test": "npm run test:backend && npm run test:web",
+    "test:backend": "cd backend && go test ./...",
+    "test:web": "cd web && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "prettier": "^2.8.0",
+    "eslint": "^8.30.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

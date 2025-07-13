@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package health.benefits;
+option go_package = "github.com/sydney-health-clone/shared/proto/benefits";
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+service BenefitsService {
+  rpc GetBenefitsSummary(GetBenefitsSummaryRequest) returns (GetBenefitsSummaryResponse);
+  rpc GetBenefitDetails(GetBenefitDetailsRequest) returns (GetBenefitDetailsResponse);
+  rpc GetDeductibleStatus(GetDeductibleStatusRequest) returns (GetDeductibleStatusResponse);
+  rpc GetOutOfPocketStatus(GetOutOfPocketStatusRequest) returns (GetOutOfPocketStatusResponse);
+}
+
+message Benefit {
+  string benefit_id = 1;
+  string name = 2;
+  string description = 3;
+  health.common.CoverageType coverage_type = 4;
+  bool is_covered = 5;
+  CoverageLevel in_network = 6;
+  CoverageLevel out_of_network = 7;
+  repeated string limitations = 8;
+  repeated string exclusions = 9;
+}
+
+message CoverageLevel {
+  health.common.Money deductible = 1;
+  health.common.Money copay = 2;
+  int32 coinsurance_percentage = 3;
+  health.common.Money annual_limit = 4;
+  health.common.Money lifetime_limit = 5;
+}
+
+message DeductibleStatus {
+  health.common.CoverageType coverage_type = 1;
+  health.common.Money individual_deductible = 2;
+  health.common.Money individual_met = 3;
+  health.common.Money family_deductible = 4;
+  health.common.Money family_met = 5;
+  google.protobuf.Timestamp period_start = 6;
+  google.protobuf.Timestamp period_end = 7;
+}
+
+message OutOfPocketStatus {
+  health.common.CoverageType coverage_type = 1;
+  health.common.Money individual_limit = 2;
+  health.common.Money individual_spent = 3;
+  health.common.Money family_limit = 4;
+  health.common.Money family_spent = 5;
+  google.protobuf.Timestamp period_start = 6;
+  google.protobuf.Timestamp period_end = 7;
+}
+
+message GetBenefitsSummaryRequest {
+  string member_id = 1;
+  health.common.CoverageType coverage_type = 2;
+}
+
+message GetBenefitsSummaryResponse {
+  repeated Benefit benefits = 1;
+}
+
+message GetBenefitDetailsRequest {
+  string member_id = 1;
+  string benefit_id = 2;
+}
+
+message GetBenefitDetailsResponse {
+  Benefit benefit = 1;
+}
+
+message GetDeductibleStatusRequest {
+  string member_id = 1;
+  health.common.CoverageType coverage_type = 2;
+}
+
+message GetDeductibleStatusResponse {
+  DeductibleStatus status = 1;
+}
+
+message GetOutOfPocketStatusRequest {
+  string member_id = 1;
+  health.common.CoverageType coverage_type = 2;
+}
+
+message GetOutOfPocketStatusResponse {
+  OutOfPocketStatus status = 1;
+}

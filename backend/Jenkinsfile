@@ -1,0 +1,216 @@
+pipeline {
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: golang
+    image: golang:1.21
+    command:
+    - cat
+    tty: true
+  - name: docker
+    image: docker:24-dind
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
+  - name: kubectl
+    image: bitnami/kubectl:latest
+    command:
+    - cat
+    tty: true
+  volumes:
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
+"""
+        }
+    }
+    
+    environment {
+        DOCKER_REGISTRY = 'gcr.io/sydney-health'
+        GO111MODULE = 'on'
+        GOPROXY = 'https://proxy.golang.org'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Lint') {
+            steps {
+                container('golang') {
+                    sh '''
+                        cd backend
+                        go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+                        golangci-lint run ./...
+                    '''
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                container('golang') {
+                    sh '''
+                        cd backend
+                        go test -v -coverprofile=coverage.out ./...
+                        go tool cover -html=coverage.out -o coverage.html
+                    '''
+                }
+            }
+        }
+        
+        stage('Build') {
+            parallel {
+                stage('Gateway Service') {
+                    steps {
+                        container('golang') {
+                            sh '''
+                                cd backend/services/gateway
+                                CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o gateway ./cmd/main.go
+                            '''
+                        }
+                    }
+                }
+                stage('Member Service') {
+                    steps {
+                        container('golang') {
+                            sh '''
+                                cd backend/services/member
+                                CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o member ./cmd/main.go
+                            '''
+                        }
+                    }
+                }
+                stage('Benefits Service') {
+                    steps {
+                        container('golang') {
+                            sh '''
+                                cd backend/services/benefits
+                                CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o benefits ./cmd/main.go
+                            '''
+                        }
+                    }
+                }
+                stage('Claims Service') {
+                    steps {
+                        container('golang') {
+                            sh '''
+                                cd backend/services/claims
+                                CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o claims ./cmd/main.go
+                            '''
+                        }
+                    }
+                }
+                stage('Messaging Service') {
+                    steps {
+                        container('golang') {
+                            sh '''
+                                cd backend/services/messaging
+                                CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o messaging ./cmd/main.go
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Build Docker Images') {
+            when {
+                branch 'main'
+            }
+            steps {
+                container('docker') {
+                    script {
+                        def services = ['gateway', 'member', 'benefits', 'claims', 'messaging']
+                        def imageTag = "${env.GIT_COMMIT}"
+                        
+                        services.each { service ->
+                            sh """
+                                cd backend/services/${service}
+                                docker build -t ${DOCKER_REGISTRY}/${service}:${imageTag} .
+                                docker tag ${DOCKER_REGISTRY}/${service}:${imageTag} ${DOCKER_REGISTRY}/${service}:latest
+                            """
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Push to Registry') {
+            when {
+                branch 'main'
+            }
+            steps {
+                container('docker') {
+                    withCredentials([file(credentialsId: 'gcr-key', variable: 'GCR_KEY')]) {
+                        sh '''
+                            docker login -u _json_key --password-stdin https://gcr.io < ${GCR_KEY}
+                        '''
+                        
+                        script {
+                            def services = ['gateway', 'member', 'benefits', 'claims', 'messaging']
+                            def imageTag = "${env.GIT_COMMIT}"
+                            
+                            services.each { service ->
+                                sh """
+                                    docker push ${DOCKER_REGISTRY}/${service}:${imageTag}
+                                    docker push ${DOCKER_REGISTRY}/${service}:latest
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy to Dev') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                container('kubectl') {
+                    withCredentials([file(credentialsId: 'kubeconfig-dev', variable: 'KUBECONFIG')]) {
+                        sh '''
+                            kubectl apply -f backend/k8s/dev/ --namespace=sydney-health-dev
+                        '''
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            junit 'backend/**/test-results/*.xml'
+            publishHTML([
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'backend',
+                reportFiles: 'coverage.html',
+                reportName: 'Coverage Report'
+            ])
+        }
+        success {
+            slackSend(
+                color: 'good',
+                message: "Backend build successful: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+            )
+        }
+        failure {
+            slackSend(
+                color: 'danger',
+                message: "Backend build failed: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+            )
+        }
+    }
+}

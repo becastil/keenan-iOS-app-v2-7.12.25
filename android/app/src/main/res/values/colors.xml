@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary colors (Uber blue) -->
+    <color name="primary">#276EF1</color>
+    <color name="primary_dark">#1A5ED8</color>
+    <color name="primary_light">#5A91F5</color>
+    
+    <!-- Secondary colors (Green) -->
+    <color name="secondary">#00A862</color>
+    <color name="secondary_dark">#008B4F</color>
+    <color name="secondary_light">#33C584</color>
+    
+    <!-- Neutral colors -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="gray_900">#212121</color>
+    <color name="gray_800">#424242</color>
+    <color name="gray_700">#616161</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_500">#9E9E9E</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_300">#E0E0E0</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_100">#F5F5F5</color>
+    
+    <!-- Background colors -->
+    <color name="background">#F5F5F5</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="on_background">#212121</color>
+    <color name="on_surface">#212121</color>
+    <color name="on_surface_variant">#757575</color>
+    
+    <!-- Status colors -->
+    <color name="error">#E54B4B</color>
+    <color name="warning">#F9A825</color>
+    <color name="success">#00A862</color>
+    <color name="info">#276EF1</color>
+    
+    <!-- Coverage type colors -->
+    <color name="medical_color">#276EF1</color>
+    <color name="dental_color">#00A862</color>
+    <color name="vision_color">#8B572A</color>
+    <color name="pharmacy_color">#E54B4B</color>
+    
+    <!-- Status badge colors -->
+    <color name="status_paid_bg">#E6F4EA</color>
+    <color name="status_paid_text">#1E7E34</color>
+    <color name="status_pending_bg">#FEF3E2</color>
+    <color name="status_pending_text">#F9A825</color>
+    <color name="status_denied_bg">#FCE8E6</color>
+    <color name="status_denied_text">#D32F2F</color>
+</resources>

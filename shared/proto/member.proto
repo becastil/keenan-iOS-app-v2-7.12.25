@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package health.member;
+option go_package = "github.com/sydney-health-clone/shared/proto/member";
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+service MemberService {
+  rpc GetMember(GetMemberRequest) returns (GetMemberResponse);
+  rpc UpdateMember(UpdateMemberRequest) returns (UpdateMemberResponse);
+  rpc GetMemberCard(GetMemberCardRequest) returns (GetMemberCardResponse);
+  rpc ListDependents(ListDependentsRequest) returns (ListDependentsResponse);
+}
+
+message Member {
+  string member_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string middle_name = 4;
+  google.protobuf.Timestamp date_of_birth = 5;
+  string email = 6;
+  string phone = 7;
+  health.common.Address address = 8;
+  string group_number = 9;
+  string subscriber_id = 10;
+  google.protobuf.Timestamp enrollment_date = 11;
+  repeated health.common.CoverageType active_coverages = 12;
+}
+
+message MemberCard {
+  string member_id = 1;
+  string member_name = 2;
+  string member_number = 3;
+  string group_number = 4;
+  string bin_number = 5;
+  string pcn_number = 6;
+  string rx_group = 7;
+  string plan_name = 8;
+  google.protobuf.Timestamp issue_date = 9;
+  map<string, string> additional_info = 10;
+}
+
+message GetMemberRequest {
+  string member_id = 1;
+}
+
+message GetMemberResponse {
+  Member member = 1;
+}
+
+message UpdateMemberRequest {
+  Member member = 1;
+}
+
+message UpdateMemberResponse {
+  Member member = 1;
+}
+
+message GetMemberCardRequest {
+  string member_id = 1;
+  health.common.CoverageType coverage_type = 2;
+}
+
+message GetMemberCardResponse {
+  MemberCard card = 1;
+}
+
+message ListDependentsRequest {
+  string member_id = 1;
+}
+
+message ListDependentsResponse {
+  repeated Member dependents = 1;
+}

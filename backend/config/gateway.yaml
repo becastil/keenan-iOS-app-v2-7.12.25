@@ -1,0 +1,49 @@
+server:
+  port: 8080
+  grpc_port: 9090
+  environment: development
+  log_level: debug
+
+database:
+  driver: postgres
+  host: localhost
+  port: 5432
+  username: health_user
+  password: health_pass
+  database: sydney_health
+  max_open_conns: 25
+  max_idle_conns: 5
+
+kafka:
+  brokers:
+    - localhost:9092
+  group_id: health-gateway
+  claims_topic: health.claims
+  messages_topic: health.messages
+  audit_topic: health.audit
+
+services:
+  member_service:
+    host: localhost
+    port: 50051
+  benefits_service:
+    host: localhost
+    port: 50052
+  provider_service:
+    host: localhost
+    port: 50053
+  claims_service:
+    host: localhost
+    port: 50054
+  messaging_service:
+    host: localhost
+    port: 50055
+
+auth:
+  jwt_secret: your-secret-key-here
+  token_duration: 3600
+
+metrics:
+  enabled: true
+  port: 9091
+  path: /metrics

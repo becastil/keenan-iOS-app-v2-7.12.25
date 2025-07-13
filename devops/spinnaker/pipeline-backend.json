@@ -1,0 +1,248 @@
+{
+  "application": "sydney-health",
+  "name": "Backend Services Pipeline",
+  "description": "Deploy backend microservices to Kubernetes",
+  "keepWaitingPipelines": false,
+  "limitConcurrent": true,
+  "stages": [
+    {
+      "name": "Build Docker Images",
+      "type": "jenkins",
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "master": "jenkins-master",
+      "job": "sydney-health/build-backend",
+      "parameters": {
+        "BRANCH": "${trigger.properties.branch}",
+        "COMMIT_SHA": "${trigger.properties.sha}"
+      }
+    },
+    {
+      "name": "Run Tests",
+      "type": "jenkins",
+      "refId": "2",
+      "requisiteStageRefIds": ["1"],
+      "master": "jenkins-master",
+      "job": "sydney-health/test-backend",
+      "parameters": {
+        "BRANCH": "${trigger.properties.branch}"
+      }
+    },
+    {
+      "name": "Push to Registry",
+      "type": "jenkins",
+      "refId": "3",
+      "requisiteStageRefIds": ["2"],
+      "master": "jenkins-master",
+      "job": "sydney-health/push-images",
+      "parameters": {
+        "IMAGE_TAG": "${trigger.properties.sha}"
+      }
+    },
+    {
+      "name": "Deploy to Staging",
+      "type": "deployManifest",
+      "refId": "4",
+      "requisiteStageRefIds": ["3"],
+      "cloudProvider": "kubernetes",
+      "moniker": {
+        "app": "sydney-health"
+      },
+      "account": "k8s-staging",
+      "manifests": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "name": "gateway-service",
+            "namespace": "sydney-health-staging"
+          },
+          "spec": {
+            "replicas": 2,
+            "selector": {
+              "matchLabels": {
+                "app": "gateway-service"
+              }
+            },
+            "template": {
+              "metadata": {
+                "labels": {
+                  "app": "gateway-service"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "name": "gateway",
+                    "image": "gcr.io/sydney-health/gateway:${trigger.properties.sha}",
+                    "ports": [
+                      {
+                        "containerPort": 8080
+                      }
+                    ],
+                    "env": [
+                      {
+                        "name": "ENV",
+                        "value": "staging"
+                      }
+                    ],
+                    "resources": {
+                      "requests": {
+                        "memory": "256Mi",
+                        "cpu": "100m"
+                      },
+                      "limits": {
+                        "memory": "512Mi",
+                        "cpu": "500m"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Integration Tests",
+      "type": "jenkins",
+      "refId": "5",
+      "requisiteStageRefIds": ["4"],
+      "master": "jenkins-master",
+      "job": "sydney-health/integration-tests",
+      "parameters": {
+        "ENVIRONMENT": "staging"
+      }
+    },
+    {
+      "name": "Manual Approval",
+      "type": "manualJudgment",
+      "refId": "6",
+      "requisiteStageRefIds": ["5"],
+      "judgmentInputs": [],
+      "notifications": [
+        {
+          "type": "slack",
+          "channel": "#deployments",
+          "when": ["awaiting"]
+        }
+      ]
+    },
+    {
+      "name": "Deploy to Production",
+      "type": "deployManifest",
+      "refId": "7",
+      "requisiteStageRefIds": ["6"],
+      "cloudProvider": "kubernetes",
+      "moniker": {
+        "app": "sydney-health"
+      },
+      "account": "k8s-production",
+      "manifests": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "name": "gateway-service",
+            "namespace": "sydney-health-production"
+          },
+          "spec": {
+            "replicas": 5,
+            "strategy": {
+              "type": "RollingUpdate",
+              "rollingUpdate": {
+                "maxSurge": 1,
+                "maxUnavailable": 0
+              }
+            },
+            "selector": {
+              "matchLabels": {
+                "app": "gateway-service"
+              }
+            },
+            "template": {
+              "metadata": {
+                "labels": {
+                  "app": "gateway-service"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "name": "gateway",
+                    "image": "gcr.io/sydney-health/gateway:${trigger.properties.sha}",
+                    "ports": [
+                      {
+                        "containerPort": 8080
+                      }
+                    ],
+                    "env": [
+                      {
+                        "name": "ENV",
+                        "value": "production"
+                      }
+                    ],
+                    "resources": {
+                      "requests": {
+                        "memory": "512Mi",
+                        "cpu": "250m"
+                      },
+                      "limits": {
+                        "memory": "1Gi",
+                        "cpu": "1000m"
+                      }
+                    },
+                    "livenessProbe": {
+                      "httpGet": {
+                        "path": "/health",
+                        "port": 8080
+                      },
+                      "initialDelaySeconds": 30,
+                      "periodSeconds": 10
+                    },
+                    "readinessProbe": {
+                      "httpGet": {
+                        "path": "/health",
+                        "port": 8080
+                      },
+                      "initialDelaySeconds": 5,
+                      "periodSeconds": 5
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Smoke Tests",
+      "type": "jenkins",
+      "refId": "8",
+      "requisiteStageRefIds": ["7"],
+      "master": "jenkins-master",
+      "job": "sydney-health/smoke-tests",
+      "parameters": {
+        "ENVIRONMENT": "production"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "type": "git",
+      "branch": "main",
+      "source": "github",
+      "project": "sydney-health",
+      "slug": "backend"
+    }
+  ],
+  "notifications": [
+    {
+      "type": "slack",
+      "channel": "#deployments",
+      "when": ["pipeline.starting", "pipeline.complete", "pipeline.failed"]
+    }
+  ]
+}

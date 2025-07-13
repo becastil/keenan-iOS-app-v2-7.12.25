@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package health.provider;
+option go_package = "github.com/sydney-health-clone/shared/proto/provider";
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+service ProviderService {
+  rpc SearchProviders(SearchProvidersRequest) returns (SearchProvidersResponse);
+  rpc GetProvider(GetProviderRequest) returns (GetProviderResponse);
+  rpc CheckNetworkStatus(CheckNetworkStatusRequest) returns (CheckNetworkStatusResponse);
+}
+
+message Provider {
+  string provider_id = 1;
+  string npi = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string practice_name = 5;
+  repeated string specialties = 6;
+  repeated ProviderLocation locations = 7;
+  repeated string accepted_plans = 8;
+  repeated string languages = 9;
+  string gender = 10;
+  bool accepting_new_patients = 11;
+  double rating = 12;
+  int32 review_count = 13;
+}
+
+message ProviderLocation {
+  string location_id = 1;
+  health.common.Address address = 2;
+  string phone = 3;
+  string fax = 4;
+  repeated string office_hours = 5;
+  double distance_miles = 6;
+}
+
+message SearchProvidersRequest {
+  string member_id = 1;
+  string specialty = 2;
+  string location = 3;
+  double radius_miles = 4;
+  string provider_name = 5;
+  bool in_network_only = 6;
+  bool accepting_new_patients = 7;
+  health.common.CoverageType coverage_type = 8;
+  health.common.PageRequest page = 9;
+}
+
+message SearchProvidersResponse {
+  repeated Provider providers = 1;
+  health.common.PageResponse page = 2;
+}
+
+message GetProviderRequest {
+  string provider_id = 1;
+}
+
+message GetProviderResponse {
+  Provider provider = 1;
+}
+
+message CheckNetworkStatusRequest {
+  string provider_id = 1;
+  string member_id = 2;
+  health.common.CoverageType coverage_type = 3;
+}
+
+message CheckNetworkStatusResponse {
+  bool in_network = 1;
+  string network_tier = 2;
+  repeated string covered_services = 3;
+}

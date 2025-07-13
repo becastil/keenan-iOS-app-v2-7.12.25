@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package health.common;
+option go_package = "github.com/sydney-health-clone/shared/proto/common";
+
+import "google/protobuf/timestamp.proto";
+
+message Address {
+  string street1 = 1;
+  string street2 = 2;
+  string city = 3;
+  string state = 4;
+  string zip_code = 5;
+  string country = 6;
+}
+
+message Money {
+  int64 cents = 1;
+  string currency = 2;
+}
+
+enum CoverageType {
+  COVERAGE_TYPE_UNSPECIFIED = 0;
+  COVERAGE_TYPE_MEDICAL = 1;
+  COVERAGE_TYPE_DENTAL = 2;
+  COVERAGE_TYPE_VISION = 3;
+  COVERAGE_TYPE_PHARMACY = 4;
+}
+
+enum ClaimStatus {
+  CLAIM_STATUS_UNSPECIFIED = 0;
+  CLAIM_STATUS_PENDING = 1;
+  CLAIM_STATUS_APPROVED = 2;
+  CLAIM_STATUS_DENIED = 3;
+  CLAIM_STATUS_PROCESSING = 4;
+  CLAIM_STATUS_PAID = 5;
+}
+
+message PageRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+}
+
+message PageResponse {
+  string next_page_token = 1;
+  int32 total_count = 2;
+}

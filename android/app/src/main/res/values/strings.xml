@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sydney Health</string>
+    
+    <!-- Login -->
+    <string name="login_title">Sign In</string>
+    <string name="login_subtitle">Sign in to manage your health benefits</string>
+    <string name="login_member_id">Member ID</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Sign In</string>
+    <string name="login_biometric_prompt">Use biometrics to sign in</string>
+    <string name="login_error_invalid_credentials">Invalid member ID or password</string>
+    
+    <!-- Navigation -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_benefits">Benefits</string>
+    <string name="nav_claims">Claims</string>
+    <string name="nav_providers">Find Care</string>
+    <string name="nav_member_card">Member ID</string>
+    <string name="nav_messages">Messages</string>
+    
+    <!-- Dashboard -->
+    <string name="dashboard_welcome">Welcome back, %s</string>
+    <string name="dashboard_overview">Your health plan overview</string>
+    <string name="dashboard_medical_coverage">Medical Coverage</string>
+    <string name="dashboard_dental_coverage">Dental Coverage</string>
+    <string name="dashboard_vision_coverage">Vision Coverage</string>
+    <string name="dashboard_pharmacy_coverage">Pharmacy Coverage</string>
+    <string name="dashboard_deductible_tracker">Deductible Tracker</string>
+    <string name="dashboard_quick_actions">Quick Actions</string>
+    <string name="dashboard_recent_claims">Recent Claims</string>
+    
+    <!-- Benefits -->
+    <string name="benefits_title">Your Benefits</string>
+    <string name="benefits_medical">Medical</string>
+    <string name="benefits_dental">Dental</string>
+    <string name="benefits_vision">Vision</string>
+    <string name="benefits_pharmacy">Pharmacy</string>
+    
+    <!-- Claims -->
+    <string name="claims_title">Claims</string>
+    <string name="claims_pending">Pending</string>
+    <string name="claims_processed">Processed</string>
+    <string name="claims_submit">Submit a Claim</string>
+    
+    <!-- Providers -->
+    <string name="providers_title">Find Care</string>
+    <string name="providers_search_hint">Search by name, specialty, or location</string>
+    <string name="providers_filter">Filter</string>
+    <string name="providers_near_me">Near Me</string>
+    
+    <!-- Member Card -->
+    <string name="member_card_title">Member ID Card</string>
+    <string name="member_card_download">Download</string>
+    <string name="member_card_share">Share</string>
+    
+    <!-- Messages -->
+    <string name="messages_title">Messages</string>
+    <string name="messages_new">New Message</string>
+    <string name="messages_empty">No messages</string>
+    
+    <!-- Common -->
+    <string name="common_loading">Loading…</string>
+    <string name="common_error">An error occurred</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_save">Save</string>
+    <string name="common_logout">Sign Out</string>
+</resources>

@@ -1,6 +1,30 @@
+# Environment Variables
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Security & Credentials
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+credentials/
+secrets/
+config/*.yaml
+config/*.yml
+!config/*.example.yaml
+!config/*.sample.yaml
+
 # Logs
 logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
 
 # Claude operations documentation
 .claudedocs/
@@ -11,10 +35,13 @@ logs/
 
 # System files
 .DS_Store
-Thumbs.db
-desktop.ini
+.DS_Store?
+._*
 .Spotlight-V100
 .Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
 
 # IDE files
 .vscode/
@@ -24,6 +51,12 @@ desktop.ini
 *~
 .project
 .settings/
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
 
 # Temporary files
 *.tmp
@@ -32,6 +65,167 @@ desktop.ini
 *.backup
 *.old
 .cache/
+tmp/
+temp/
 
 # Backup files from install script
 superclaude-backup.*
+
+# Dependencies
+node_modules/
+bower_components/
+vendor/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output/
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.coveragerc
+.tox/
+.nox/
+.coverage
+.coverage.*
+junit.xml
+
+# Build outputs
+dist/
+build/
+out/
+target/
+*.egg-info/
+.eggs/
+*.egg
+release/
+.next/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+
+# iOS
+*.xcworkspace/
+!default.xcworkspace/
+xcuserdata/
+DerivedData/
+*.xccheckout
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+Pods/
+.build/
+Carthage/Build/
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+iOSInjectionProject/
+
+# Android
+*.iml
+.gradle/
+local.properties
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+out/
+release/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Docker
+.docker/
+
+# Kafka
+kafka-logs/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+data/
+
+# Miscellaneous
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.vercel
+*.pem.pub
+
+# Monitoring data
+prometheus_data/
+grafana_data/
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
